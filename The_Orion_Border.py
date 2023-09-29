@@ -44,10 +44,12 @@ def pause():
     pause_ip = input('Please, write \"continue\" to continue your adventure: ')
 
     if pause_ip == 'continue':
+      print ('\n')
       break
     
     else:
       print('Wrong imput')
+      return
 
 # Resources consumption with every new event
 def after_event():
@@ -56,7 +58,14 @@ def after_event():
    global crew_num
 
    fuel_num = fuel_num - 1
-   food_num = food_num - crew_num
+   if food_num - crew_num < 0: #In case the expedition gets out of food but there whas still some for part of the crew
+    food_num = food_num - crew_num
+    crew_num = crew_num + food_num
+    food_num = 0
+    return
+   else:
+    food_num = food_num - crew_num
+    return
 
 #=================Intro=================
 
@@ -67,7 +76,9 @@ pause()
 
 #=================Game Over=================
 def game_over():
-  if food_num != 0 or fuel_num != 0 or crew_num != 0 or hull_damage != 0 or reactor_malfuction != 0:
+  global exp_supplye
+  if fuel_num <= 0 or crew_num <= 0 or hull_damage <= 0 or reactor_malfuction <= 0:
+    print(exp_supplye())
     print('The expedition never managed to arriva to it\'s destinatio')
     print('GAME OVER')
     
@@ -75,7 +86,6 @@ def game_over():
 
 # Mission: traveler in problems
 def mission_traveler():
- switch = True
 
  global fuel_num
  global food_num
@@ -120,6 +130,7 @@ def asteroid_impact():
  asteroid_impact = random.choice([0,1,2]) # this part decides the fate of the ship by rolling a d3
  if asteroid_impact == 0 and hull_damage == 2: #The ship takes the shoot but the hull persist
   print('Luckily the hull was strong enough to endure the impact with no meaningfull damage.')
+  print('\n')
 
  elif asteroid_impact == 0 and hull_damage == 1: #The ship is too damaged to take the shoot, but the pilot manages to save the ship
   print('The pilot pulls out a quick move that alows the ship to avoid collision.')
@@ -448,7 +459,7 @@ def abandoned_ship():
     if m4 == 'yes':
      abandoned_ship_exploration_fates = [abandoned_ship_scenario_1, abandoned_ship_scenario_2]
      exploration_team_fate = random.choice(abandoned_ship_exploration_fates)
-     print(exploration_team_fate())
+     exploration_team_fate()
      break
 
     elif m4 == 'not':
@@ -565,14 +576,8 @@ def radiation_storm():
        print('Wrong imput, write \"yes\" or \"not\" to continue:')
 
 #=================Tale Randomizer 1º act=================
-#while True:
- # if food_num < 0 or fuel_num <= 0 or hull_damage == False or reactor_malfuction == False:
-  #  game_over = True
-   # print('GAME OVER')
-    #break
-  #if game_over is False:
    #Here are stored all the possible events for the first act of the game
-first_act_possible_events = [scrap_field, old_fuel_station, radiation_storm, mission_traveler, asteroid_impact]
+first_act_possible_events = [scrap_field, old_fuel_station, radiation_storm, mission_traveler, asteroid_impact] #scrap_field, old_fuel_station, radiation_storm, mission_traveler, asteroid_impact
    #These gentleman will choose the events that will be plaid for the players Tale
 event_1_selector = random.choice(first_act_possible_events)
 event_2_selector = random.choice(first_act_possible_events)
@@ -582,7 +587,7 @@ event_4_selector = random.choice(first_act_possible_events)
   
 print('[[THIS IS event_1_selector]]') #Temporary adjustment to make sure all works well (DELETE THIS WHEN TEST OVER)
 exp_supplye()
-print(event_1_selector())
+event_1_selector()
 after_event()
 pause()
 while True:
@@ -590,7 +595,7 @@ while True:
     if event_2_selector != event_1_selector:
        print('[[THIS IS event_2_selector]]') #Temporary adjustment to make sure all works well (DELETE THIS WHEN TEST OVER)
        exp_supplye()
-       print(event_2_selector())
+       event_2_selector()
        after_event()
        game_over()
        pause()
@@ -600,7 +605,7 @@ while True:
      if event_3_selector != event_1_selector and event_3_selector != event_2_selector:
           print('[[THIS IS event_3_selector]]') #Temporary adjustment to make sure works well (DELETE THIS WHEN TEST OVER)
           exp_supplye()
-          print(event_3_selector())
+          event_3_selector()
           after_event()
           game_over()
           pause()
@@ -610,11 +615,73 @@ while True:
          if event_4_selector != event_1_selector and event_4_selector != event_2_selector and event_4_selector != event_3_selector:
           print('[[THIS IS event_4_selector]]') #Temporary adjustment to make sure works well (DELETE THIS WHEN TEST OVER)
           exp_supplye()
-          print(event_4_selector())
+          event_4_selector()
           after_event()
           game_over()
           pause()
-    
+          break
+#Introduction to the 2º act
+print('The expedition arrives to Novrobsk trade station, one of the')
+print('last known civilized posts before reaching the borders of the explored galaxy.')
+print('Byond this point only the unknow awhaits.')
+print('\n')
+print('The merchant post offers a variety of goods for the correct price')
+#Extend trade post with FIXED prices
+print('\n')
+while True:
+ exp_supplye()
+ print('=========Novrobsk Trade Post=========')
+ print('\n')
+ print('Food: A cate filled with 4 food cans => [3 fuel units]')
+ print('Fuel: A fuel tank storing 3 units of fuel => [4 food units]')
+ print('Recruit: Someone desperate looking for work => [2 units of food and fuel]')
+ print('\n')
+ print('Writhe the name of the supply to buy or \"exit\" if you want to finish trading.')
+ novrobsk_trade = input()
+ if novrobsk_trade == 'food' or novrobsk_trade == 'Food':
+  if fuel_num - 3 > 0:
+   print('\n')
+   print('A food crate has been added to the ship storage.')
+   print('\n')
+   fuel_num = fuel_num - 3
+   food_num = food_num + 4
+  elif fuel_num - 3 <= 0:
+   print('\n')
+   print('The expedition can\'t affort that.')
+   print('\n')
+  else:
+    print('NOVROBSK_FOOD_TRADE_ERROR')
+ elif novrobsk_trade == 'fuel' or novrobsk_trade == 'Fuel':
+  if food_num - 4 > 0:
+   print('\n')
+   print('A fuel tank has been added to the ship storage.')
+   print('\n')
+   food_num = food_num - 4
+   fuel_num = fuel_num + 3
+  elif food_num - 4 <= 0:
+   print('\n')
+   print('The expedition can\'t affort that.')
+   print('\n')
+  else:
+    print('NOVROBSK_FUEL_TRADE_ERROR')
+ elif novrobsk_trade == 'recruit' or novrobsk_trade == 'Recruit':
+   print('\n')
+   print('A new member has joined the crew.')
+   print('\n')
+   crew_num = crew_num + 1
+   food_num = food_num - 2
+   fuel_num = fuel_num - 2
+ elif novrobsk_trade == 'exit' or novrobsk_trade == 'Exit':
+   print('\n')
+   print('The expedition says farewell to Novrobsk station as they move towards')
+   print('the unknow.')
+   print('Having managed to arrive this far the crew seems enthusiastic')
+   print('\n')
+   after_event()
+   break
+ else:
+   print('Wrong input. Please, writhe the name of the supply to buy or \"exit\" if you want to finish trading.')
+
 
 print('The ship, beating all odds, has arrived to the Orion Border.')
 game_over = True
