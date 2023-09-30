@@ -18,6 +18,8 @@ reactor_parts = False
 hull_parts = False
 # Allows the ship to shoot at enemy ships
 weapon_system = False
+# Indicator if the game has ended
+GameOver = False
 # Names of the different crew members
 names = ('Rogers', 'Maria', 'Paul\'QuickHands\'', 'Andrew', 'Luna', 'Subaru', 'Kiho', 'Harnaf', 'Asuka', 'Strotnor', 'Nora')
 
@@ -40,16 +42,59 @@ def exp_supplye():
 
 # pause between actions to allow the player read more calmly
 def pause():
-  while True:
-    pause_ip = input('Please, write \"continue\" to continue your adventure: ')
+  global hull_damage
+  global reactor_malfuction
+  global hull_parts
+  global reactor_parts
 
-    if pause_ip == 'continue':
-      print ('\n')
-      break
-    
+  while True:
+    if hull_damage == 1 and hull_parts is True or reactor_malfuction == 1 and reactor_parts is True:
+      print('The ship is damaged.')
+      print('With the correct parts, it can be fixed during the journey.')
+      print('To do it, writhe \"fix hull\" or \"fix reactor\" if you have the parts.')
+      print('If you don\'t want to fix it yet, just writhe \"continue\"')
+      fix_ship = input()
+      if fix_ship == 'fix hull' or fix_ship == 'Fix hull':
+        if hull_damage == 2:
+          print('The hull does\'t need  to be fix.')
+        elif hull_damage == 1 and hull_parts is False:
+          print('There are no parts to fix the hull')
+        elif hull_damage == 1 and hull_parts is True:
+          print('The hull has been fixed.')
+          hull_damage = 2
+          hull_parts = False
+          break
+        else:
+          print('HULL_FIX_ERROR')
+      elif fix_ship == 'fix reactor' or fix_ship == 'Fix reactor':
+        if reactor_malfuction == 2:
+          print('The reactor doesn\'t need to be fix')
+        elif reactor_malfuction == 1 and reactor_parts is False:
+          print('There are no parts to fix the reactor')
+        elif reactor_malfuction == 1 and reactor_parts is True:
+          print('The reactor has been fixed')
+          reactor_malfuction = 2
+          reactor_parts = False
+          break
+        else:
+          print('REACTOR_FIX_ERROR')
+      elif fix_ship == 'continue':
+        print ('\n')
+        break
+      else:
+        print('Wrong imput')
+
+    elif GameOver is True:
+      print('Your adventure has ended, but you can try again.')
+
     else:
-      print('Wrong imput')
-      return
+     print ('\n')
+     pause_ip = input('Please, write \"continue\" to continue your adventure: ')
+     if pause_ip == 'continue':
+       print ('\n')
+       break
+     else:
+       print('Wrong imput')
 
 # Resources consumption with every new event
 def after_event():
@@ -57,15 +102,23 @@ def after_event():
    global fuel_num
    global crew_num
 
-   fuel_num = fuel_num - 1
    if food_num - crew_num < 0: #In case the expedition gets out of food but there whas still some for part of the crew
     food_num = food_num - crew_num
     crew_num = crew_num + food_num
     food_num = 0
+    print ('\n')
+    print('The lack of food has caused the loss of crew')
+    print ('\n')
     return
    else:
     food_num = food_num - crew_num
-    return
+   if reactor_malfuction == 1:
+    fuel_num = fuel_num - 2
+    print ('\n')
+    print('Because of the ship reactor damage, the ship wasted more fuel')
+    print ('\n')
+   else:
+    fuel_num = fuel_num - 1
 
 #=================Intro=================
 
@@ -81,6 +134,7 @@ def game_over():
     print(exp_supplye())
     print('The expedition never managed to arriva to it\'s destinatio')
     print('GAME OVER')
+    GameOver = True
     
 #=================ACT 1=================
 
@@ -247,13 +301,14 @@ def scrap_field():
        elif hull_damage == 2:
         print('Even with the constant noise of small pices of scrap hiting at the hull the structure of the ship')
         print('is able to endure it with no issues.')
+        print('\n')
         print('The ship whas able to salvage something from the scrap field:')
         scrap_field_reward = random.choice([1,2,3])
         if scrap_field_reward == 1: #Electronic parts
           reactor_parts = True
           print('Reactor parts: they can be used to fix a damaged reactor')
           break
-        elif scrap_field_reward == 2: #Hull parts
+        elif scrap_field_reward == 2: #Hull partsissues
           hull_parts = True
           print('Hull parts: can be used to fix a ship\'s damaged hull')
           break
@@ -524,7 +579,7 @@ def old_fuel_station():
            break
          else:
            print('Wrong imput, write \"yes\" or \"not\" to continue:')
-   elif m5 == 'no':
+   elif m5 == 'not':
      print('The ship lefts behind the station, becoming just a tiny point in contrast of the')
      print('of the gas giant surface.')
      print('The expedition continues its journey.')
@@ -556,7 +611,7 @@ def radiation_storm():
      print('\n')
      print('The radiation lectures skyrocket out of the ships hull, going further byond safety limits.')
      print('Yet the shield reflects almost all of the radiation, leting through only a small')
-     print('ammount, within the range of non-hazardous')
+     print('amount, within the range of non-hazardous')
      fuel_num = fuel_num - 1
      break
    elif m6 == 'not':
@@ -593,33 +648,33 @@ pause()
 while True:
     event_2_selector = random.choice(first_act_possible_events)
     if event_2_selector != event_1_selector:
-       print('[[THIS IS event_2_selector]]') #Temporary adjustment to make sure all works well (DELETE THIS WHEN TEST OVER)
-       exp_supplye()
-       event_2_selector()
-       after_event()
-       game_over()
-       pause()
-       break
+     print('[[THIS IS event_2_selector]]') #Temporary adjustment to make sure all works well (DELETE THIS WHEN TEST OVER)
+     exp_supplye()
+     event_2_selector()
+     after_event()
+     game_over()
+     pause()
+     break
 while True:
-     event_3_selector = random.choice(first_act_possible_events)
-     if event_3_selector != event_1_selector and event_3_selector != event_2_selector:
-          print('[[THIS IS event_3_selector]]') #Temporary adjustment to make sure works well (DELETE THIS WHEN TEST OVER)
-          exp_supplye()
-          event_3_selector()
-          after_event()
-          game_over()
-          pause()
-          break
+    event_3_selector = random.choice(first_act_possible_events)
+    if event_3_selector != event_1_selector and event_3_selector != event_2_selector:
+      print('[[THIS IS event_3_selector]]') #Temporary adjustment to make sure works well (DELETE THIS WHEN TEST OVER)
+      exp_supplye()
+      event_3_selector()
+      after_event()
+      game_over()
+      pause()
+      break
 while True:
-         event_4_selector = random.choice(first_act_possible_events)
-         if event_4_selector != event_1_selector and event_4_selector != event_2_selector and event_4_selector != event_3_selector:
-          print('[[THIS IS event_4_selector]]') #Temporary adjustment to make sure works well (DELETE THIS WHEN TEST OVER)
-          exp_supplye()
-          event_4_selector()
-          after_event()
-          game_over()
-          pause()
-          break
+    event_4_selector = random.choice(first_act_possible_events)
+    if event_4_selector != event_1_selector and event_4_selector != event_2_selector and event_4_selector != event_3_selector:
+      print('[[THIS IS event_4_selector]]') #Temporary adjustment to make sure works well (DELETE THIS WHEN TEST OVER)
+      exp_supplye()
+      event_4_selector()
+      after_event()
+      game_over()
+      pause()
+      break
 #Introduction to the 2º act
 print('The expedition arrives to Novrobsk trade station, one of the')
 print('last known civilized posts before reaching the borders of the explored galaxy.')
@@ -682,6 +737,77 @@ while True:
  else:
    print('Wrong input. Please, writhe the name of the supply to buy or \"exit\" if you want to finish trading.')
 
+#=================ACT 2=================
+#An special state for one of the events at the 2º act of the game
+madness = False
+#Alien
+def aliens():
+  global crew_num
+  global food_num
+  global food_num
+
+  print('The radar has detected an unknow object is aproaching the expedition ship at high speed.')
+  print('The moviment of the object is unnatural and seems to be traying to reach the ship.')
+  if weapon_system is True:
+    print('\n')
+    print('The weapon system keep track of the object as it enter in range ¿Do we shoot?')
+    print('yes = the ship shoots at the target.')
+    print('not = let the target get closer.')
+    shoot_large = input()
+    roll_shoot = random.randint(1,4)
+    edible_alien_food = random.choices(4,8,12)
+    while True:
+     if shoot_large == 'yes':
+       print('The weapon system shoots at the target ')
+       if roll_shoot == 1:
+         print('The weapon system hits right into the strange object, causing a big blue explosion')
+         print('From the debri the crew manages to rescue a few containers with a very weird looking food')
+         print(edible_alien_food,' of them look edible')
+         food_num = food_num + edible_alien_food
+         break
+       elif roll_shoot >= 2:
+         print('The weapon system shoots at the strange object but the object responds with evasive maneuvers.')
+         print('\n')
+         print('After a few more shoots the object flees away')
+       else:
+         print('LONG_ALIEN_SHOOT_ERROR')
+     elif shoot_large == 'not':
+       print('The object gets closer towards the expedition ship.')
+       print('It\'s still targeted by the weapon system ¿Shoot?')
+       print('yes = the ship shoots at the target.')
+       print('not = let the target get even closer.')
+       shoot_medium = input()
+       while True:
+        if shoot_medium == 'yes':
+          if roll_shoot <= 2:
+           print('The weapon system hits right into the strange object, causing a big blue explosion')
+           print('From the debri the crew manages to rescue a few containers with a very weird looking food')
+           print(edible_alien_food,' of them look edible')
+           food_num = food_num + edible_alien_food
+          elif roll_shoot == 3:
+           print('The weapon system shoots at the strange object but the object responds with evasive maneuvers.')
+           print('\n')
+           print('After a few more shoots the object flees away')
+          elif roll_shoot == 4:
+           print('The object evades the shoots and gets closer to the expedition ship.')
+           print('\n')
+           print('The crew starts to worry.')
+           #provably gonna need a new variable called alien_evade_medium and alien_evade_short
+          else:
+            print('MEDIUM_ALIEN_SHOOT_ERROR')
+
+        elif shoot_medium == 'not':
+         print('The object gets closer towards the expedition ship.')
+         print('It\'s still targeted by the weapon system ¿Shoot?')
+         print('yes = the ship shoots at the target.')
+         print('not = let the target get even closer.')
+          
+        else:
+         print('wrong imput. Please writhe \"yes\" or \"not\".')
+     else:
+       print('wrong imput. Please writhe \"yes\" or \"not\".')
+       
+#Madness, the most cursed event
 
 print('The ship, beating all odds, has arrived to the Orion Border.')
 game_over = True
