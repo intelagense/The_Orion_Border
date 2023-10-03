@@ -549,6 +549,7 @@ def old_fuel_station():
      print('\n')
      print('While exploring the station, the team noticed that the machinery is not damaged')
      print('and only need power.')
+     fuel_num = fuel_num + fuel_station_exploration
      if reactor_parts is False:
        print('Sadly, the reactor is missing some parts')
        print('and can not be fixed without them.')
@@ -632,7 +633,7 @@ def radiation_storm():
 
 #=================Tale Randomizer 1º act=================
    #Here are stored all the possible events for the first act of the game
-first_act_possible_events = [scrap_field, old_fuel_station, radiation_storm, mission_traveler, asteroid_impact] #scrap_field, old_fuel_station, radiation_storm, mission_traveler, asteroid_impact
+first_act_possible_events = [scrap_field, old_fuel_station, radiation_storm, mission_traveler, asteroid_impact, abandoned_ship, electric_storm] #scrap_field, old_fuel_station, radiation_storm, mission_traveler, asteroid_impact
    #These gentleman will choose the events that will be plaid for the players Tale
 event_1_selector = random.choice(first_act_possible_events)
 event_2_selector = random.choice(first_act_possible_events)
@@ -687,7 +688,7 @@ while True:
  exp_supplye()
  print('=========Novrobsk Trade Post=========')
  print('\n')
- print('Food: A cate filled with 4 food cans => [3 fuel units]')
+ print('Food: A crate filled with 4 food cans => [3 fuel units]')
  print('Fuel: A fuel tank storing 3 units of fuel => [4 food units]')
  print('Recruit: Someone desperate looking for work => [2 units of food and fuel]')
  print('\n')
@@ -745,67 +746,123 @@ def aliens():
   global crew_num
   global food_num
   global food_num
+  global fuel_num
+  global hull_damage
+  global weapon_system
 
-  print('The radar has detected an unknow object is aproaching the expedition ship at high speed.')
-  print('The moviment of the object is unnatural and seems to be traying to reach the ship.')
+  print('The radar has detected than an unknow object is aproaching the expedition ship at high speed.')
+  print('It\'s moviments are unnatural and calculated.')
+  print('\n')
   if weapon_system is True:
-    print('\n')
-    print('The weapon system keep track of the object as it enter in range ¿Do we shoot?')
-    print('yes = the ship shoots at the target.')
-    print('not = let the target get closer.')
-    shoot_large = input()
-    roll_shoot = random.randint(1,4)
-    edible_alien_food = random.choices(4,8,12)
-    while True:
-     if shoot_large == 'yes':
-       print('The weapon system shoots at the target ')
-       if roll_shoot == 1:
-         print('The weapon system hits right into the strange object, causing a big blue explosion')
-         print('From the debri the crew manages to rescue a few containers with a very weird looking food')
-         print(edible_alien_food,' of them look edible')
-         food_num = food_num + edible_alien_food
-         break
-       elif roll_shoot >= 2:
-         print('The weapon system shoots at the strange object but the object responds with evasive maneuvers.')
-         print('\n')
-         print('After a few more shoots the object flees away')
-       else:
-         print('LONG_ALIEN_SHOOT_ERROR')
-     elif shoot_large == 'not':
-       print('The object gets closer towards the expedition ship.')
-       print('It\'s still targeted by the weapon system ¿Shoot?')
-       print('yes = the ship shoots at the target.')
-       print('not = let the target get even closer.')
-       shoot_medium = input()
-       while True:
-        if shoot_medium == 'yes':
-          if roll_shoot <= 2:
-           print('The weapon system hits right into the strange object, causing a big blue explosion')
-           print('From the debri the crew manages to rescue a few containers with a very weird looking food')
-           print(edible_alien_food,' of them look edible')
-           food_num = food_num + edible_alien_food
-          elif roll_shoot == 3:
-           print('The weapon system shoots at the strange object but the object responds with evasive maneuvers.')
-           print('\n')
-           print('After a few more shoots the object flees away')
-          elif roll_shoot == 4:
-           print('The object evades the shoots and gets closer to the expedition ship.')
-           print('\n')
-           print('The crew starts to worry.')
-           #provably gonna need a new variable called alien_evade_medium and alien_evade_short
-          else:
-            print('MEDIUM_ALIEN_SHOOT_ERROR')
+    print('The weapons system are ready to engaje.')
+  print('In case of enemy fire, a shield can be deployed, but it will cost 1 fuel each time')
+  print('Evasive manouvers are also an option to try scape it\'s reach')
+  alien_hp = 100
+  hull_endurance = 50
+  ufo_distance_number = 10
+  if hull_damage == 1:
+      hull_endurance = 25
 
-        elif shoot_medium == 'not':
-         print('The object gets closer towards the expedition ship.')
-         print('It\'s still targeted by the weapon system ¿Shoot?')
-         print('yes = the ship shoots at the target.')
-         print('not = let the target get even closer.')
-          
-        else:
-         print('wrong imput. Please writhe \"yes\" or \"not\".')
-     else:
-       print('wrong imput. Please writhe \"yes\" or \"not\".')
+  while alien_hp > 0 or hull_endurance > 0 or ufo_distance_number >= 0:
+     #This part tells to the player how far away is the UFO from the expedition ship
+     if ufo_distance_number >= 7:
+       ufo_distance = 'The UFO is far away from the ship.'
+     elif ufo_distance_number >= 5:
+       ufo_distance = 'The UFO is closing distance towards the ship.'
+     elif ufo_distance_number >= 3:
+       ufo_distance = 'The UFO is reaching the ship.'
+     elif ufo_distance_number >= 1:
+       ufo_distance = 'The UFO is almost on the ship, bright lights can seen out the ship airlock.'
+     #This part tells to the player how is the state of the hull
+     if hull_endurance == 50:
+       hull_state = 'The hull is fully intact.'
+     elif hull_endurance >= 30:
+       hull_state = 'The hull is dented.'
+     elif hull_endurance >= 25:
+       hull_state = 'The hull is damaged!'
+       if hull_damage == 2:
+         hull_damage = 1
+     elif hull_endurance >= 10:
+       if hull_damage == 2:
+         hull_damage = 1
+       hull_state = 'The hull is very damaged!'
+     elif hull_endurance >= 1:
+       if hull_damage == 2:
+         hull_damage = 1
+       hull_state = 'The hull will not hold more impacts!'
+     #This part tells the player the state of the UFO
+     if alien_hp > 80:
+       alien_state = 'A very strong light comes from the UFO.'
+     elif alien_hp <= 80:
+       alien_state = 'A bright light comes from the UFO.'
+     elif alien_hp <= 50:
+       alien_state = 'A dim light comes from the UFO.'
+     elif alien_hp <= 20:
+       alien_state = 'A flickering light comes from the UFO.'
+
+     ufo_behavior = random.randint(1,10)
+
+
+     exp_supplye()
+     print('\n')
+     print(ufo_distance, hull_state, alien_state)
+     if ufo_behavior >= 8 and alien_hp <= 20:
+       print('¡A very strong energy signal is comming from the UFO!')
+     elif ufo_behavior < 8 and alien_hp <= 20:
+       print('¡The UFO is trachen to cut distance!')
+     elif alien_hp <= 20:
+       print('¡The UFO is traying to scape!')
+     print('\n')
+     print('There are the options avaliable')
+     end_turn = False #To make sure the battle options are still avaliable until it's over
+     while end_turn is False:
+      if weapon_system is True:
+       print('Shoot = The weapon system will shoot at the UFO')
+      print('Shield = Deploy a shield to protect from enemy fire. [Cost 1 fuel]')
+      print('Evade = Evasive manouvers to try get some distance or even scape')
+      battle_input = input()
+
+      if battle_input == 'shoot' or battle_input == 'Shoot' and weapon_system is True:
+        print('The weapon system shoots at the UFO, making some damage')
+        damage_to_ufo = random.choices([15,20,25])
+        alien_hp = alien_hp - damage_to_ufo
+        end_turn = True
+      elif battle_input == 'shield' or battle_input == 'Shield':
+        fuel_num = fuel_num - 1
+        print('The defensive shields are deployed around the ship for the incoming enemy fire.')
+        shield_state = True
+        end_turn = True
+      elif battle_input == 'evade' or battle_input == 'Evade':
+        print('The ship trys to gain distance from the UFO')
+        ufo_distance_number = ufo_distance_number + 2.5
+        end_turn = True
+      else:
+        print('Wrong imput. Please, writhe correctly the imputs bellow.')
+     
+     end_turn = False
+
+     #UFO turn
+     if ufo_behavior >= 8 and alien_hp <= 20 and shield_state is True: #UFO shooting
+       damage_to_ship = random.choices([10,15,20])
+       hull_endurance = hull_endurance - damage_to_ship
+       print('The UFO shoots against the ship, damaging it')
+     elif ufo_behavior >= 8 and alien_hp <= 20 and shield_state is False: #UFO shooting against shield
+       print('The UFO shoots against the ship, but the shields absorv the impact')
+     elif ufo_behavior < 8 and alien_hp <= 20: #UFO aproaching
+       ufo_distance_number = ufo_distance_number - 2
+     elif alien_hp <= 20: #UFO scaping
+       ufo_distance_number = ufo_distance_number + 2
+    
+  if alien_hp == 0:
+   edible_alien_food = random.choices([4,8,12])
+   print('The UFO explodes with a bright blue light.')
+   print('From it\'s remains some containers had been recovered.')
+   print('They seem to contain some kind of xeno food and a small ammout of some')
+   print('kind of bright liquid that seems to be fuel.')
+
+the_alien = aliens
+the_alien()
+
        
 #Madness, the most cursed event
 
