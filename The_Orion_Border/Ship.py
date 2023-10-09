@@ -12,19 +12,22 @@ class Resources:
     def fuel_storage(self,fuel_reward):
         self.fuel = self.fuel + fuel_reward
         return self.fuel
+    def fuel_used(self,fuel_expenses):
+        self.fuel = self.fuel - fuel_expenses
+        return self.fuel
     def food_storage(self,food_reward):
         self.food = self.food + food_reward
         return self.food
     def crew_remaining(self,crew_lost):
-        crew = crew - crew_lost
+        self.crew = crew - crew_lost
     def hull_damage(self):
-        hull_state = True
+        self.hull_state = True
     def hull_parts_(self):
-        hull_parts = True
+        self.hull_parts = True
     def reactor_damage(self):
-        reactor_state = True
+        self.reactor_state = True
     def reactor_parts_(self):
-        reactor_parts = True     
+        self.reactor_parts = True     
     def fix_hull(self):
         if hull_state is True and hull_parts is True:
             hull_state = False
@@ -49,9 +52,3 @@ class Resources:
      if self.reactor_state is True:
       print('ALERT: Reactors fluctiations are unstable. Emergency repairs are encouraged.')
      print('\n')
-
-ship = Resources(10,10,4,False,False,False,False,False)
-
-from act_1_events import mission_traveler
-
-mission_traveler()

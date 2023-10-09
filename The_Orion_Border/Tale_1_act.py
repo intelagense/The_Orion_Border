@@ -1,5 +1,5 @@
 from Ship import Resources
-from Ship import ship
+from act_1_events import ship
 from act_1_events import mission_traveler
 #=================Intro=================
 

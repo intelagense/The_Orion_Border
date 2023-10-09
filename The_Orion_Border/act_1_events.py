@@ -1,6 +1,7 @@
 from Ship import Resources
-from Ship import ship
 import random
+
+ship = Resources(10,10,4,False,False,False,False,False)
 
 def mission_traveler():
   
@@ -15,8 +16,8 @@ def mission_traveler():
      print('\n')
 
      if m1 == 'yes':
-      fuel_expenses = random.randint(-1, -2)
-      food_reward = random.choice([5, 10, 15])
+      fuel_expenses = random.randint(1, 2)
+      food_reward = random.choices([5, 10, 15])
       print('The job is done easely and without trouble. To do the trip the ship used ',fuel_expenses, 'units of fuel')
       print(food_reward, 'units of food has been given as a reward for the job.')
       print('\n')
