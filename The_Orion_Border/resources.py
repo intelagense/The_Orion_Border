@@ -19,6 +19,9 @@ class Resources:
     def food_storage(self,food_reward):
         self.food = self.food + food_reward
         return self.food
+    def food_used(self,food_expenses):
+       self.food = self.food - food_expenses
+       return self.food
     def crew_remaining(self,crew_lost):
         self.crew = self.crew - crew_lost
     def hull_damage(self):
@@ -28,7 +31,9 @@ class Resources:
     def reactor_damage(self):
         self.reactor_state = True
     def reactor_parts_(self):
-        self.reactor_parts = True     
+        self.reactor_parts = True
+    def weapons_online(self):
+        self.weapon_system = True    
     def fix_hull(self):
         if self.hull_state is True and self.hull_parts is True:
             self.hull_state = False
@@ -53,6 +58,8 @@ class Resources:
      if self.weapon_system is True:
        print('=====WEAPON SYSTEM=====')
        print('⚠ ON-LINE ⚠')
+     if self.hull_parts is True or self.reactor_parts is True:
+        print('=====STORAGE=====')
      if self.hull_parts is True:
       print('Hull parts avaliable')
      if self.reactor_parts is True:
